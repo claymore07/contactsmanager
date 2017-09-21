@@ -14,3 +14,9 @@
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::post('groups/store',['uses'=>'GroupsController@store', 'as'=>'groups.store']);
+Route::post('email/store',['uses'=>'EmailsController@store', 'as'=>'emails.store']);
+Route::get('/contacts/autoComplete',['uses'=>'ContactsController@autoComplete', 'as'=>'contacts.autoComplete']);
+Route::post('contacts/validation',['uses'=>'ContactsController@contactFormValidation', 'as'=>'contacts.validation']);
+Route::resource('/contacts', 'ContactsController');

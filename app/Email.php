@@ -8,7 +8,7 @@ class Email extends Model
 {
     //
     protected $fillable=[
-        'email'
+        'email', 'contact_id',
     ];
 
     public function contact(){

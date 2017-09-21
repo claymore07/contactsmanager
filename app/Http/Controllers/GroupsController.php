@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Group;
+use App\Http\Requests\GroupCreateRequest;
 use Illuminate\Http\Request;
 
 class GroupsController extends Controller
@@ -32,9 +34,12 @@ class GroupsController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(GroupCreateRequest $request)
     {
         //
+        if($request->ajax()) {
+            return Group::create($request->all());
+        }
     }
 
     /**

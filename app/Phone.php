@@ -8,7 +8,7 @@ class Phone extends Model
 {
     //
     protected $fillable=[
-        'phone', 'category_id',
+        'phone', 'category_id', 'contact_id'
     ];
 
     public function contact(){

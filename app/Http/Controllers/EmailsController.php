@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Email;
+use App\Http\Requests\EmailCreateRequest;
 use Illuminate\Http\Request;
 
 class EmailsController extends Controller
@@ -32,9 +34,15 @@ class EmailsController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(EmailCreateRequest $request)
     {
         //
+        if($request->ajax()) {
+            $input =$request->all();
+            $input['contact_id']=1;
+
+            return Email::create($input);
+        }
     }
 
     /**
