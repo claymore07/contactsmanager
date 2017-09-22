@@ -13,5 +13,5 @@ define('LARAVEL_START', microtime(true));
 | our application's PHP classes. It just feels great to relax.
 |
 */
-
+ini_set('xdebug.max_nesting_level', 150);
 require __DIR__.'/../vendor/autoload.php';

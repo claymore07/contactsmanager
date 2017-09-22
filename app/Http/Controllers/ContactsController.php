@@ -6,6 +6,7 @@ use App\Category;
 use App\Contact;
 use App\Group;
 use App\Http\Requests\ContactCreateRequest;
+use Auth;
 use File;
 use Illuminate\Http\Request;
 
@@ -13,6 +14,10 @@ class ContactsController extends Controller
 {
     private $userImagePath = 'images';
     private $defaultImage = 'default_user.jpg';
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
 
     /**
      * Display a listing of the resource.
@@ -22,7 +27,7 @@ class ContactsController extends Controller
     public function index(Request $request)
     {
         //
-        $user_id =1;
+        $user_id =Auth::user()->id;
         $contacts = Contact::where(function($query) use ($request, $user_id) {
             if( ($term = $request->get("term")) ) {
                 $name = explode(" ",$term,2);
@@ -33,9 +38,10 @@ class ContactsController extends Controller
                     $query->orWhere("lname", 'LIKE', $lname);
                 }else {
                     $keywords = '%' . $term . '%';
-                    $query->orWhere("name", 'LIKE', $keywords);
+                    $query->orWhere("fname", 'LIKE', $keywords);
+                    $query->orWhere("lname", 'LIKE', $keywords);
                     $query->orWhere("company", 'LIKE', $keywords);
-                    $query->orWhere("email", 'LIKE', $keywords);
+
                 }
             }
 
@@ -79,7 +85,7 @@ class ContactsController extends Controller
         $phones = $request->phones;
         $category_ids = $request->category_ids;
 
-        $input['user_id'] = 1;
+
         if ($photo = $request->file('photo')) {
             $path = public_path() . '/images';
             $fileName = time() . $photo->getClientOriginalName();
@@ -87,12 +93,12 @@ class ContactsController extends Controller
             $input['path'] = $fileName;
 
 
-            $contact = Contact::create($input);
+            $contact =Auth::user()->contacts()->create($input);
         } else {
             $fileName = time() . $this->defaultImage;
             File::copy($this->userImagePath . '/' . $this->defaultImage, $this->userImagePath . '/' . $fileName);
             $input['path'] = $fileName;
-            $contact = Contact::create($input);
+            $contact =Auth::user()->contacts()->create($input);
         }
         $email['email'] = $input['email'];
         $contact->emails()->create($email);
@@ -140,6 +146,7 @@ class ContactsController extends Controller
         //
 
         $contact = Contact::findOrFail($id);
+        $this->authorize('modify', $contact);
         return view('contacts.show', compact('contact'));
     }
 
@@ -155,6 +162,9 @@ class ContactsController extends Controller
         $categories = Category::pluck('name', 'id')->all();
         $groups = Group::pluck('name', 'id')->all();
         $contact = Contact::findOrFail($id);
+
+        $this->authorize('modify', $contact);
+
         return view('contacts.edit', compact('contact','categories','groups'));
     }
 
@@ -265,12 +275,27 @@ class ContactsController extends Controller
     public function destroy($id)
     {
         //
+
+        $contact =  Contact::findOrFail($id);
+
+
+        $this->authorize('modify', $contact);
+
+        if($contact->path != null){
+
+            if (File::exists(public_path() . '/images/'. $contact->path)) {
+
+                unlink(public_path() . '/images/'. $contact->path);
+            }
+        }
+        $contact->delete();
+        return redirect('/contacts')->with('message','اطلاعات مخاطب مورد نظر با موفقیت حذف شد.');
     }
 
 
     public function autoComplete(Request $request){
         if($request->ajax()){
-            return Contact::select(['id','user_id','fname as value', 'lname as lname'])->where('user_id','=',1)->where(function($query) use ($request){
+            return Contact::select(['id','user_id','fname as value', 'lname as lname'])->where('user_id','=',Auth::user()->id)->where(function($query) use ($request){
 
                 if(($term = $request->get('term'))){
 

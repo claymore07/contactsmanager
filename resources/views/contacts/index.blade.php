@@ -6,6 +6,20 @@
 
 
         <div class="panel panel-default" >
+            <div class="panel-heading clearfix">
+                <div class="pull-right">
+                    <h4>
+                    مخاطبان
+                    </h4>
+                </div>
+                <div class="pull-left">
+                    <a href="{{route('contacts.create')}}" class="btn btn-success">
+
+                        افزودن مخاطب جدید
+                        <i class="glyphicon glyphicon-plus"></i>
+                    </a>
+                </div>
+            </div>
             @if(Session::has('message'))
                 <div class=" alert alert-success">
                     {{session('message')}}
@@ -37,7 +51,7 @@
                         {!! Form::open(['method'=>'DELETE', 'action'=>['ContactsController@destroy', $contact->id]]) !!}
                         {!! Form::token() !!}
                         <div>
-                            <a href="{{route('contacts.show', $contact->id)}}" class="btn btn-circle btn-primary btn-xs" title="مخشاهده">
+                            <a href="{{route('contacts.show', $contact->id)}}" class="btn btn-circle btn-primary btn-xs" title="مشاهده">
                                 <i class="glyphicon glyphicon-list"></i>
                             </a>
                             <a href="{{route('contacts.edit', $contact->id)}}" class="btn btn-circle btn-default btn-xs" title="ویرایش">
@@ -47,6 +61,7 @@
                                 <i class="glyphicon glyphicon-remove"></i>
                             </button>
                         </div>
+                        {!! Form::close() !!}
                     </td>
                 </tr>
              @endforeach

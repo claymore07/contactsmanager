@@ -20,3 +20,7 @@ Route::post('email/store',['uses'=>'EmailsController@store', 'as'=>'emails.store
 Route::get('/contacts/autoComplete',['uses'=>'ContactsController@autoComplete', 'as'=>'contacts.autoComplete']);
 Route::post('contacts/validation',['uses'=>'ContactsController@contactFormValidation', 'as'=>'contacts.validation']);
 Route::resource('/contacts', 'ContactsController');
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');
